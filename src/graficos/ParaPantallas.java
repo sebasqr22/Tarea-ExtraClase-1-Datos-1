@@ -48,9 +48,13 @@ class ventana extends JFrame{
 		
 		setTitle("Esto es una Prueba");
 		
-		TextoEnPantalla pantalla1 = new TextoEnPantalla(); //crear la instancia basandose en la clase de TextoEnPantalla
+		//TextoEnPantalla pantalla1 = new TextoEnPantalla(); //crear la instancia basandose en la clase de TextoEnPantalla
 		
-		add(pantalla1); //agrega la pantalla creada	
+		//add(pantalla1); //agrega la pantalla creada	
+		
+		PantallaTextoConfig pantalla2 = new PantallaTextoConfig();
+		
+		add(pantalla2);
 	}
 }
 
@@ -61,5 +65,23 @@ class TextoEnPantalla extends JPanel{
 		super.paintComponent(g);//llamar a clase padre para que dibuje y haga primero su trabajo original 
 		
 		g.drawString("Hola mundo!", 100, 100);
+	}
+}
+
+class PantallaTextoConfig extends JPanel{
+	
+	public void paintComponent(Graphics g) {
+		
+		super.paintComponent(g);
+		
+		Graphics2D g2 = (Graphics2D) g;
+		
+		Font nuevaFuente = new Font("Consolas", Font.BOLD, 35);
+		
+		g2.setFont(nuevaFuente);
+		
+		g2.setColor(Color.orange); //g2.setColor(new Color(128,34,124).brighter para hacer mas claro); para crear color
+		
+		g2.drawString("Hola CR!", 100, 100);
 	}
 }
