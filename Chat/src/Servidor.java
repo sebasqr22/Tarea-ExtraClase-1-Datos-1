@@ -55,11 +55,27 @@ class VentanaServidor extends JFrame implements Runnable{
 		try {
 			ServerSocket servidorMensajes = new ServerSocket(9999);
 			
+			String nombre, numIp, mensajeCompleto;
+			
+			Envio mensajeRecibido;
+			
 			while (true) {
 			
 				Socket socketServidor = servidorMensajes.accept();
 				
-				DataInputStream entradaDatos = new DataInputStream(socketServidor.getInputStream());
+				ObjectInputStream llegada = new ObjectInputStream(socketServidor.getInputStream());
+				
+				mensajeRecibido = (Envio) llegada.readObject();
+				
+				socketServidor.close();
+				
+				nombre = mensajeRecibido.getNombre();
+				
+				numIp = mensajeRecibido.getNumIp();
+				
+				mensajeCompleto = mensajeRecibido.getCajaTexto1();
+				
+				/*DataInputStream entradaDatos = new DataInputStream(socketServidor.getInputStream());
 				
 				String mensaje = entradaDatos.readUTF();
 				
@@ -71,13 +87,25 @@ class VentanaServidor extends JFrame implements Runnable{
 				
 				else {
 					texto.append("\n" + mensaje); 
+				}*/
+				
+				if (contador == 0) {
+					
+					texto.append(nombre + ":" + mensajeCompleto + "para" + numIp);
+					
+					contador ++;
+				}
+				
+				else {
+					
+					texto.append("\n" + nombre + ":" + mensajeCompleto + "para" + numIp);
 				}
 			
 				socketServidor.close();
 			
 			}
 			
-		} catch (IOException e) {
+		} catch (IOException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			
 			//e.printStackTrace();

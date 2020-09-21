@@ -2,9 +2,7 @@ import java.net.*;
 
 import java.awt.event.*;
 
-import java.io.DataOutputStream;
-
-import java.io.IOException;
+import java.io.*;
 
 import javax.swing.*;
 
@@ -52,13 +50,13 @@ class MarcoConTexto extends JPanel{
 		
 		add(tituloVentana);
 		
-		chat = new JTextArea(50,50);
-		
-		add(chat);
-		
 		cajaTexto1 = new JTextField(20);
 		
 		add(cajaTexto1);
+		
+		chat = new JTextArea(50,50);
+		
+		add(chat);
 		
 		botonEnviar1 = new JButton("Enviar Mensaje");
 		
@@ -89,6 +87,12 @@ class MarcoConTexto extends JPanel{
 				
 				mensaje.setCajaTexto1(cajaTexto1.getText());
 				
+				ObjectOutputStream mensajeCompleto = new ObjectOutputStream(envioDeMensaje.getOutputStream());
+				
+				mensajeCompleto.writeObject(mensaje);
+				
+				envioDeMensaje.close();
+				
 				/*DataOutputStream datos = new DataOutputStream(envioDeMensaje.getOutputStream());
 				
 				datos.writeUTF(cajaTexto1.getText());
@@ -118,7 +122,7 @@ class MarcoConTexto extends JPanel{
 	private JTextArea chat;
 }
 
-class Envio{
+class Envio implements Serializable{
 	
 	private String nombre, numIp, cajaTexto1;
 
