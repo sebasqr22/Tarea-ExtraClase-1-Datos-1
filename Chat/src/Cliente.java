@@ -24,7 +24,7 @@ class VentanaDelCliente extends JFrame{
 		
 		setSize(1000, 650);
 		
-		setResizable(false);
+		setResizable(true);
 		
 		MarcoConTexto marco1 = new MarcoConTexto();
 		
@@ -34,7 +34,7 @@ class VentanaDelCliente extends JFrame{
 			
 	}
 }
-class MarcoConTexto extends JPanel{
+class MarcoConTexto extends JPanel implements Runnable{
 	
 	public MarcoConTexto() {
 		
@@ -54,7 +54,7 @@ class MarcoConTexto extends JPanel{
 		
 		add(cajaTexto1);
 		
-		chat = new JTextArea(50,50);
+		chat = new JTextArea(30,30);
 		
 		add(chat);
 		
@@ -65,6 +65,10 @@ class MarcoConTexto extends JPanel{
 		botonEnviar1.addActionListener(enviar);
 		
 		add(botonEnviar1);
+		
+		Thread reciboMensajes = new Thread(this);
+		
+		reciboMensajes.start();
 		
 	}
 	
@@ -120,6 +124,36 @@ class MarcoConTexto extends JPanel{
 	private JButton botonEnviar1;
 	
 	private JTextArea chat;
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+		try {
+			
+			ServerSocket servidorDelCliente = new ServerSocket(9090);
+			
+			Socket reciboDatos;
+			
+			Envio recibido;
+			
+			while(true) {
+				
+				reciboDatos = servidorDelCliente.accept();
+				
+				ObjectInputStream entradaDatos = new ObjectInputStream(reciboDatos.getInputStream());
+				
+				recibido = (Envio) entradaDatos.readObject();
+				
+				chat.append("\n" + recibido.getNombre() + ": " + recibido.getCajaTexto1());
+			}
+		}
+		
+		catch (Exception e){
+			
+			System.out.println(e.getMessage());
+		}
+	}
 }
 
 class Envio implements Serializable{

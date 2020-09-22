@@ -91,15 +91,23 @@ class VentanaServidor extends JFrame implements Runnable{
 				
 				if (contador == 0) {
 					
-					texto.append(nombre + ":" + mensajeCompleto + "para" + numIp);
+					texto.append(nombre + ": " + mensajeCompleto + " para " + numIp);
 					
 					contador ++;
 				}
 				
 				else {
 					
-					texto.append("\n" + nombre + ":" + mensajeCompleto + "para" + numIp);
+					texto.append("\n" + nombre + ": " + mensajeCompleto + " para " + numIp);
 				}
+				
+				Socket servidor_cliente = new Socket(numIp, 9090);
+				
+				ObjectOutputStream reenvio = new ObjectOutputStream(servidor_cliente.getOutputStream());
+				
+				reenvio.writeObject(mensajeRecibido);
+				
+				servidor_cliente.close();
 			
 				socketServidor.close();
 			
