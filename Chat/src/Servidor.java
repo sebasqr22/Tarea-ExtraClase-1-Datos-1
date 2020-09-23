@@ -57,6 +57,8 @@ class VentanaServidor extends JFrame implements Runnable{
 			
 			String nombre, numIp, mensajeCompleto;
 			
+			String numPuerto;
+			
 			Envio mensajeRecibido;
 			
 			while (true) {
@@ -75,37 +77,29 @@ class VentanaServidor extends JFrame implements Runnable{
 				
 				mensajeCompleto = mensajeRecibido.getCajaTexto1();
 				
-				/*DataInputStream entradaDatos = new DataInputStream(socketServidor.getInputStream());
-				
-				String mensaje = entradaDatos.readUTF();
-				
-				if(contador==0) {
-					texto.append(mensaje);
-	
-					contador++;
-				}
-				
-				else {
-					texto.append("\n" + mensaje); 
-				}*/
+				numPuerto = mensajeRecibido.getPuerto();
 				
 				if (contador == 0) {
 					
-					texto.append(nombre + ": " + mensajeCompleto + " para " + numIp);
+					texto.append(nombre + ": " + mensajeCompleto + " para " + numIp + "puerto " + numPuerto);
 					
 					contador ++;
 				}
 				
 				else {
 					
-					texto.append("\n" + nombre + ": " + mensajeCompleto + " para " + numIp);
+					texto.append("\n" + nombre + ": " + mensajeCompleto + " para " + numIp + numPuerto);
 				}
+				
+				int puertoEnviar = Integer.parseInt(numPuerto);
 				
 				Socket servidor_cliente = new Socket(numIp, 9090);
 				
 				ObjectOutputStream reenvio = new ObjectOutputStream(servidor_cliente.getOutputStream());
 				
 				reenvio.writeObject(mensajeRecibido);
+				
+				System.out.println("enviado");
 				
 				servidor_cliente.close();
 			

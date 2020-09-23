@@ -1,5 +1,5 @@
 import java.net.*;
-
+import java.util.Random;
 import java.awt.event.*;
 
 import java.io.*;
@@ -36,6 +36,8 @@ class VentanaDelCliente extends JFrame{
 }
 class MarcoConTexto extends JPanel implements Runnable{
 	
+	String miPuerto = String.valueOf(puertoCliente());
+	
 	public MarcoConTexto() {
 		
 		nombre = new JTextField(5);
@@ -57,6 +59,16 @@ class MarcoConTexto extends JPanel implements Runnable{
 		chat = new JTextArea(30,30);
 		
 		add(chat);
+		
+		puerto = new JTextField(20);
+		
+		add(puerto);
+		
+		puertoLocal = new JTextField(20);
+		
+		puertoLocal.setText(miPuerto);
+		
+		add(puertoLocal);
 		
 		botonEnviar1 = new JButton("Enviar Mensaje");
 		
@@ -80,8 +92,11 @@ class MarcoConTexto extends JPanel implements Runnable{
 			
 			//int numeroDePuerto = 26963;
 			
+			//InetAddress.getLocalHost()
+			String miPuerto = String.valueOf(puertoCliente());
+			
 			try {
-				Socket envioDeMensaje = new Socket(InetAddress.getLocalHost(), 9999);
+				Socket envioDeMensaje = new Socket("192.168.100.75", 9999);
 				
 				Envio mensaje = new Envio();
 				
@@ -91,9 +106,13 @@ class MarcoConTexto extends JPanel implements Runnable{
 				
 				mensaje.setCajaTexto1(cajaTexto1.getText());
 				
+				mensaje.setPuerto(miPuerto);
+	
 				ObjectOutputStream mensajeCompleto = new ObjectOutputStream(envioDeMensaje.getOutputStream());
 				
 				mensajeCompleto.writeObject(mensaje);
+				
+				mensajeCompleto.close();
 				
 				envioDeMensaje.close();
 				
@@ -119,7 +138,7 @@ class MarcoConTexto extends JPanel implements Runnable{
 		}		
 	}
 	
-	private JTextField cajaTexto1, nombre, numIp;
+	private JTextField cajaTexto1, nombre, numIp, puerto, puertoLocal;
 	
 	private JButton botonEnviar1;
 	
@@ -130,6 +149,8 @@ class MarcoConTexto extends JPanel implements Runnable{
 		// TODO Auto-generated method stub
 		
 		try {
+			
+			int puertoLlegada = puertoCliente();
 			
 			ServerSocket servidorDelCliente = new ServerSocket(9090);
 			
@@ -146,6 +167,8 @@ class MarcoConTexto extends JPanel implements Runnable{
 				recibido = (Envio) entradaDatos.readObject();
 				
 				chat.append("\n" + recibido.getNombre() + ": " + recibido.getCajaTexto1());
+				
+				System.out.println(recibido.getCajaTexto1());
 			}
 		}
 		
@@ -154,11 +177,26 @@ class MarcoConTexto extends JPanel implements Runnable{
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	public int puertoCliente(){
+		
+		Random puertoNuevo = new Random();
+		
+		int puertoAdmin = 0;
+		
+		while(puertoAdmin <= 9000) {
+			
+			puertoAdmin = puertoNuevo.nextInt(9998);
+		}
+		
+		return puertoAdmin;
+	}
 }
 
 class Envio implements Serializable{
 	
-	private String nombre, numIp, cajaTexto1;
+	private String nombre, numIp, cajaTexto1, puerto;
+	
 
 	public String getNombre() {
 		return nombre;
@@ -183,4 +221,15 @@ class Envio implements Serializable{
 	public void setCajaTexto1(String cajaTexto1) {
 		this.cajaTexto1 = cajaTexto1;
 	}
+	
+	public String getPuerto() {
+		return puerto;
+	}
+	
+	public void setPuerto(String puerto) {
+		
+		this.puerto = puerto;
+	}
+	
+	
 }

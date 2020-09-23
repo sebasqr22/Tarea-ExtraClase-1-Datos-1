@@ -14,13 +14,27 @@ import javax.swing.JTextArea;
 import javax.swing.JButton;
 import java.awt.SystemColor;
 import java.awt.Window.Type;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Random;
 
-public class VisualCliente {
+public class VisualCliente implements Runnable{
 
 	private JFrame frmServicioDeChat;
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
+	private JTextField textField_3;
+	private JTextArea textArea; 
+	private JTextField textField_4;
 
 	/**
 	 * Launch the application.
@@ -49,23 +63,27 @@ public class VisualCliente {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		String miPuerto = String.valueOf(puertoLlegada());
+		
 		frmServicioDeChat = new JFrame();
+		frmServicioDeChat.setResizable(false);
 		frmServicioDeChat.getContentPane().setBackground(new Color(47, 79, 79));
 		frmServicioDeChat.getContentPane().setLayout(null);
 		
 		textField = new JTextField();
-		textField.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		textField.setFont(new Font("Kumbh Sans", Font.PLAIN, 11));
 		textField.setBounds(122, 11, 213, 20);
 		frmServicioDeChat.getContentPane().add(textField);
 		textField.setColumns(10);
 		
-		JLabel lblNewLabel = new JLabel("Nombre Usuario");
+		JLabel lblNewLabel = new JLabel("NOMBRE");
 		lblNewLabel.setFont(new Font("Kumbh Sans", Font.BOLD | Font.ITALIC, 15));
 		lblNewLabel.setForeground(Color.WHITE);
-		lblNewLabel.setBounds(0, 15, 176, 14);
+		lblNewLabel.setBounds(35, 14, 176, 14);
 		frmServicioDeChat.getContentPane().add(lblNewLabel);
 		
 		textField_1 = new JTextField();
+		textField_1.setFont(new Font("Kumbh Sans", Font.PLAIN, 11));
 		textField_1.setBounds(122, 55, 213, 20);
 		frmServicioDeChat.getContentPane().add(textField_1);
 		textField_1.setColumns(10);
@@ -73,10 +91,10 @@ public class VisualCliente {
 		JLabel lblNewLabel_1 = new JLabel("DIRECCI\u00D3N IP");
 		lblNewLabel_1.setForeground(Color.WHITE);
 		lblNewLabel_1.setFont(new Font("Kumbh Sans", Font.BOLD | Font.ITALIC, 15));
-		lblNewLabel_1.setBounds(10, 58, 102, 14);
+		lblNewLabel_1.setBounds(10, 54, 113, 20);
 		frmServicioDeChat.getContentPane().add(lblNewLabel_1);
 		
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
 		textArea.setFont(new Font("Kumbh Sans", Font.PLAIN, 15));
 		textArea.setBounds(368, 9, 606, 640);
 		frmServicioDeChat.getContentPane().add(textArea);
@@ -90,10 +108,193 @@ public class VisualCliente {
 		JButton btnNewButton = new JButton("Enviar Mensaje");
 		btnNewButton.setFont(new Font("Kumbh Sans", Font.BOLD, 12));
 		btnNewButton.setBounds(114, 233, 121, 23);
+		EnviarMensaje envio = new EnviarMensaje();
+		btnNewButton.addActionListener(envio);
 		frmServicioDeChat.getContentPane().add(btnNewButton);
+		
+		textField_3 = new JTextField();
+		textField_3.setFont(new Font("Kumbh Sans", Font.PLAIN, 11));
+		textField_3.setBounds(122, 99, 213, 19);
+		frmServicioDeChat.getContentPane().add(textField_3);
+		textField_3.setColumns(10);
+		
+		JLabel lblNewLabel_2 = new JLabel("PUERTO");
+		lblNewLabel_2.setFont(new Font("Kumbh Sans", Font.BOLD | Font.ITALIC, 15));
+		lblNewLabel_2.setForeground(Color.WHITE);
+		lblNewLabel_2.setBounds(36, 93, 76, 30);
+		frmServicioDeChat.getContentPane().add(lblNewLabel_2);
+		
+		JLabel lblNewLabel_3 = new JLabel("Puerto de llegada: ");
+		lblNewLabel_3.setFont(new Font("Kumbh Sans", Font.BOLD | Font.ITALIC, 15));
+		lblNewLabel_3.setForeground(new Color(255, 255, 255));
+		lblNewLabel_3.setBounds(10, 358, 135, 14);
+		frmServicioDeChat.getContentPane().add(lblNewLabel_3);
+		
+		textField_4 = new JTextField();
+		textField_4.setFont(new Font("Kumbh Sans", Font.PLAIN, 11));
+		textField_4.setEditable(false);
+		textField_4.setBackground(new Color(47, 79, 79));
+		textField_4.setForeground(new Color(255, 255, 255));
+		textField_4.setBounds(161, 356, 37, 20);
+		textField_4.setText(miPuerto);
+		frmServicioDeChat.getContentPane().add(textField_4);
+		textField_4.setColumns(10);
+		
 		frmServicioDeChat.setBackground(Color.LIGHT_GRAY);
 		frmServicioDeChat.setTitle("SERVICIO DE CHAT");
 		frmServicioDeChat.setBounds(100, 100, 1000, 699);
 		frmServicioDeChat.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		Thread reciboDeMensajes = new Thread(this);
+		
+		reciboDeMensajes.start();
 	}
+	
+	private class EnviarMensaje implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			System.out.println("funca salida");
+			try {
+				Socket EnvioDeMensaje = new Socket("127.0.0.1", 9999);
+				
+				ObjetoDeEnvio mensajeCompleto = new ObjetoDeEnvio();
+				
+				mensajeCompleto.setNombre(textField.getText());
+				
+				mensajeCompleto.setIp(textField_1.getText());
+				
+				mensajeCompleto.setPuerto(textField_3.getText());
+				
+				mensajeCompleto.setMensaje(textField_2.getText());
+				
+				ObjectOutputStream mensaje = new ObjectOutputStream(EnvioDeMensaje.getOutputStream());
+				
+				mensaje.writeObject(mensajeCompleto);
+				
+				textArea.append("\n" + mensajeCompleto.getNombre() + ": " + mensajeCompleto.getMensaje());
+				
+				mensaje.close();
+				
+				EnvioDeMensaje.close();
+				
+				
+				
+			} catch (UnknownHostException e1) {
+				// TODO Auto-generated catch block
+				
+				e1.getMessage();
+				
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				
+				e1.getMessage();
+			}
+		}
+		
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+		int miPuerto = puertoLlegada();
+		
+		try {
+			ServerSocket llegadaDeMensaje = new ServerSocket(miPuerto);
+			
+			System.out.println("funca llegada");
+			
+			Socket datos;
+			
+			ObjetoDeEnvio recibo;
+			
+			while(true) {
+				
+				datos = llegadaDeMensaje.accept();
+				
+				ObjectInputStream entradaDatos = ObjectInputStream(datos.getInputStream());
+				
+				try {
+					recibo = (ObjetoDeEnvio) entradaDatos.readObject();
+					
+					textArea.append("\n" + recibo.getNombre() + ": " + recibo.getMensaje());
+					
+					datos.close();
+					
+				} 
+				
+				catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.getMessage();
+				}
+				
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			
+			e.getMessage();
+		}
+		
+	}
+
+	private ObjectInputStream ObjectInputStream(InputStream inputStream) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public int puertoLlegada() {
+		
+		Random puertoNuevo = new Random();
+		
+		int puerto = 0;
+		
+		while(puerto <= 9010) {
+			
+			puerto = puertoNuevo.nextInt(9989);
+		}
+		
+		return puerto;
+	}
+}
+
+class ObjetoDeEnvio implements Serializable{
+	
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public String getPuerto() {
+		return puerto;
+	}
+
+	public void setPuerto(String puerto) {
+		this.puerto = puerto;
+	}
+
+	public String getMensaje() {
+		return mensaje;
+	}
+
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
+	}
+
+	private String nombre, ip, puerto, mensaje;
+	
+	
 }
