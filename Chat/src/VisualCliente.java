@@ -21,10 +21,12 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
+import java.awt.Toolkit;
 
 public class VisualCliente implements Runnable{
 
@@ -66,6 +68,7 @@ public class VisualCliente implements Runnable{
 		String miPuerto = String.valueOf(puertoLlegada());
 		
 		frmServicioDeChat = new JFrame();
+		frmServicioDeChat.setIconImage(Toolkit.getDefaultToolkit().getImage("logo.png"));
 		frmServicioDeChat.setResizable(false);
 		frmServicioDeChat.getContentPane().setBackground(new Color(47, 79, 79));
 		frmServicioDeChat.getContentPane().setLayout(null);
@@ -137,6 +140,9 @@ public class VisualCliente implements Runnable{
 		textField_4.setForeground(new Color(255, 255, 255));
 		textField_4.setBounds(161, 356, 37, 20);
 		textField_4.setText(miPuerto);
+		
+		System.out.println("pUERTO INICIAL: " + miPuerto);
+		
 		frmServicioDeChat.getContentPane().add(textField_4);
 		textField_4.setColumns(10);
 		
@@ -157,7 +163,7 @@ public class VisualCliente implements Runnable{
 			// TODO Auto-generated method stub
 			System.out.println("funca salida");
 			try {
-				Socket EnvioDeMensaje = new Socket("127.0.0.1", 9999);
+				Socket EnvioDeMensaje = new Socket("192.168.100.75", 9999);
 				
 				ObjetoDeEnvio mensajeCompleto = new ObjetoDeEnvio();
 				
@@ -168,6 +174,12 @@ public class VisualCliente implements Runnable{
 				mensajeCompleto.setPuerto(textField_3.getText());
 				
 				mensajeCompleto.setMensaje(textField_2.getText());
+				
+				mensajeCompleto.setMiPuerto(textField_4.getText());
+				
+				mensajeCompleto.setMiIp(InetAddress.getLocalHost().getHostAddress());
+				
+				System.out.println(InetAddress.getLocalHost().getHostAddress());
 				
 				ObjectOutputStream mensaje = new ObjectOutputStream(EnvioDeMensaje.getOutputStream());
 				
@@ -199,22 +211,22 @@ public class VisualCliente implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		int miPuerto = puertoLlegada();
+		String puerto = textField_4.getText();
+		
+		int miPuerto = Integer.parseInt(textField_4.getText());
 		
 		try {
 			ServerSocket llegadaDeMensaje = new ServerSocket(miPuerto);
 			
-			System.out.println("funca llegada");
-			
-			Socket datos;
+			System.out.println("funca llegada al puerto: " + puerto);
 			
 			ObjetoDeEnvio recibo;
 			
 			while(true) {
 				
-				datos = llegadaDeMensaje.accept();
+				Socket datos = llegadaDeMensaje.accept();
 				
-				ObjectInputStream entradaDatos = ObjectInputStream(datos.getInputStream());
+				ObjectInputStream entradaDatos = new ObjectInputStream(datos.getInputStream());
 				
 				try {
 					recibo = (ObjetoDeEnvio) entradaDatos.readObject();
@@ -228,6 +240,8 @@ public class VisualCliente implements Runnable{
 				catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.getMessage();
+					
+					e.getCause();
 				}
 				
 			}
@@ -294,7 +308,23 @@ class ObjetoDeEnvio implements Serializable{
 		this.mensaje = mensaje;
 	}
 
-	private String nombre, ip, puerto, mensaje;
+	public String getMiPuerto() {
+		return miPuerto;
+	}
+
+	public void setMiPuerto(String miPuerto) {
+		this.miPuerto = miPuerto;
+	}
+
+	public String getMiIp() {
+		return miIp;
+	}
+
+	public void setMiIp(String miIp) {
+		this.miIp = miIp;
+	}
+
+	private String nombre, ip, puerto, mensaje, miIp, miPuerto;
 	
 	
 }

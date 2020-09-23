@@ -8,6 +8,7 @@ import java.net.Socket;
 import javax.swing.JFrame;
 import java.awt.Color;
 import javax.swing.JTextArea;
+import java.awt.Toolkit;
 
 public class VisualServer implements Runnable{
 
@@ -42,6 +43,7 @@ public class VisualServer implements Runnable{
 	 */
 	private void initialize() {
 		frmServidorDelChat = new JFrame();
+		frmServidorDelChat.setIconImage(Toolkit.getDefaultToolkit().getImage("logo.png"));
 		frmServidorDelChat.setResizable(false);
 		frmServidorDelChat.setTitle("SERVIDOR DEL CHAT");
 		frmServidorDelChat.setBackground(new Color(245, 245, 245));
@@ -68,7 +70,7 @@ public class VisualServer implements Runnable{
 			ObjetoDeEnvio entrada;
 			
 			while(true) {
-				String usuario, ip, mensajeCompleto;
+				String usuario, ip, mensajeCompleto, ipDevuelta, mensajeError;
 				
 				Socket llegadaServidor = llegadaMensaje.accept();
 				
@@ -87,15 +89,13 @@ public class VisualServer implements Runnable{
 					
 					textArea.append("\n" + usuario + ": " + mensajeCompleto + " hacia: " + ip + " por: " + entrada.getPuerto());
 					
-					llegadaServidor.close(); // prueba
+					llegadaServidor.close();
 					
 					llegada.close();
 					
 					
 					
-					Socket envioDeMensaje = new Socket("127.0.0.1", puerto);
-					
-					System.out.println("a la verga");
+					Socket envioDeMensaje = new Socket(ip, puerto);
 					
 					ObjectOutputStream reenvio = new ObjectOutputStream(envioDeMensaje.getOutputStream());
 					
@@ -105,29 +105,13 @@ public class VisualServer implements Runnable{
 					
 					envioDeMensaje.close();
 					
-					//llegadaServidor.close();
-					
-					/*
-					 * Socket EnvioDeMensaje = new Socket("127.0.0.1", 9999);
-				
-				ObjetoDeEnvio mensajeCompleto = new ObjetoDeEnvio();
-				
-				ObjectOutputStream mensaje = new ObjectOutputStream(EnvioDeMensaje.getOutputStream());
-				
-				mensaje.writeObject(mensajeCompleto);
-				
-				mensaje.close();
-				
-				EnvioDeMensaje.close();
-					 */
-					
-					
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					
 					e.getMessage();
 					
 					e.getCause();
+					
 				}
 				
 					
