@@ -27,6 +27,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 import java.awt.Toolkit;
+import javax.swing.SwingConstants;
 
 public class VisualCliente implements Runnable{
 
@@ -82,7 +83,7 @@ public class VisualCliente implements Runnable{
 		JLabel lblNewLabel = new JLabel("NOMBRE");
 		lblNewLabel.setFont(new Font("Kumbh Sans", Font.BOLD | Font.ITALIC, 15));
 		lblNewLabel.setForeground(Color.WHITE);
-		lblNewLabel.setBounds(35, 14, 176, 14);
+		lblNewLabel.setBounds(43, 12, 176, 17);
 		frmServicioDeChat.getContentPane().add(lblNewLabel);
 		
 		textField_1 = new JTextField();
@@ -96,6 +97,13 @@ public class VisualCliente implements Runnable{
 		lblNewLabel_1.setFont(new Font("Kumbh Sans", Font.BOLD | Font.ITALIC, 15));
 		lblNewLabel_1.setBounds(10, 54, 113, 20);
 		frmServicioDeChat.getContentPane().add(lblNewLabel_1);
+		
+		JLabel textoAquiMen = new JLabel("AQUI APARECEN SUS MENSAJES");
+		textoAquiMen.setFont(new Font("Kumbh Sans Light", Font.ITALIC, 10));
+		textoAquiMen.setForeground(Color.GRAY);
+		textoAquiMen.setVerticalAlignment(SwingConstants.TOP);
+		textoAquiMen.setBounds(594, 11, 176, 14);
+		frmServicioDeChat.getContentPane().add(textoAquiMen);
 		
 		textArea = new JTextArea();
 		textArea.setFont(new Font("Kumbh Sans", Font.PLAIN, 15));
@@ -162,46 +170,69 @@ public class VisualCliente implements Runnable{
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			System.out.println("funca salida");
-			try {
-				Socket EnvioDeMensaje = new Socket("192.168.100.75", 9999);
+			
+			String name, ipDir, port, men, myPort, mensajeError;
+			
+			name = textField.getText();
+			
+			ipDir = textField_1.getText();
+			
+			port = textField_3.getText();
+			
+			men = textField_2.getText();
+			
+			myPort = textField_4.getText();
+			
+			mensajeError = ("Servidor: Porfavor llene todos los espacios...");
+			
+			if (name.isEmpty() || ipDir.isEmpty() || port.isEmpty() || men.isEmpty()){
 				
-				ObjetoDeEnvio mensajeCompleto = new ObjetoDeEnvio();
+				textArea.append("\n" + mensajeError);
+			}
+			
+			else {
+				try {
+					Socket EnvioDeMensaje = new Socket("192.168.100.75", 9999);
+					
+					ObjetoDeEnvio mensajeCompleto = new ObjetoDeEnvio();
+					
+					mensajeCompleto.setNombre(name);
+					
+					mensajeCompleto.setIp(ipDir);
+					
+					mensajeCompleto.setPuerto(port);
+					
+					mensajeCompleto.setMensaje(men);
+					
+					mensajeCompleto.setMiPuerto(myPort);
+					
+					mensajeCompleto.setMiIp(InetAddress.getLocalHost().getHostAddress());
+					
+					System.out.println(InetAddress.getLocalHost().getHostAddress());
+					
+					ObjectOutputStream mensaje = new ObjectOutputStream(EnvioDeMensaje.getOutputStream());
+					
+					mensaje.writeObject(mensajeCompleto);
+					
+					textArea.append("\n" + mensajeCompleto.getNombre() + ": " + mensajeCompleto.getMensaje());
+					
+					mensaje.close();
+					
+					EnvioDeMensaje.close();
+					
+					
+					
+				} catch (UnknownHostException e1) {
+					// TODO Auto-generated catch block
+					
+					e1.getMessage();
+					
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					
+					e1.getMessage();
+				}
 				
-				mensajeCompleto.setNombre(textField.getText());
-				
-				mensajeCompleto.setIp(textField_1.getText());
-				
-				mensajeCompleto.setPuerto(textField_3.getText());
-				
-				mensajeCompleto.setMensaje(textField_2.getText());
-				
-				mensajeCompleto.setMiPuerto(textField_4.getText());
-				
-				mensajeCompleto.setMiIp(InetAddress.getLocalHost().getHostAddress());
-				
-				System.out.println(InetAddress.getLocalHost().getHostAddress());
-				
-				ObjectOutputStream mensaje = new ObjectOutputStream(EnvioDeMensaje.getOutputStream());
-				
-				mensaje.writeObject(mensajeCompleto);
-				
-				textArea.append("\n" + mensajeCompleto.getNombre() + ": " + mensajeCompleto.getMensaje());
-				
-				mensaje.close();
-				
-				EnvioDeMensaje.close();
-				
-				
-				
-			} catch (UnknownHostException e1) {
-				// TODO Auto-generated catch block
-				
-				e1.getMessage();
-				
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				
-				e1.getMessage();
 			}
 		}
 		

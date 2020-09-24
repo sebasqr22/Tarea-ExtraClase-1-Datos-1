@@ -112,6 +112,8 @@ public class VisualServer implements Runnable{
 					
 					e.getCause();
 					
+					System.out.println("Error 1");
+					
 				}
 				
 					
@@ -120,6 +122,8 @@ public class VisualServer implements Runnable{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
+			System.out.println("Error 2");
 		}
 	}
 }
