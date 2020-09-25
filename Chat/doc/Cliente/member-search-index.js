@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"<Unnamed>","c":"VisualCliente","l":"main(String[])","url":"main(java.lang.String[])"},{"p":"<Unnamed>","c":"VisualCliente","l":"puertoLlegada()"},{"p":"<Unnamed>","c":"VisualCliente","l":"run()"},{"p":"<Unnamed>","c":"VisualCliente","l":"VisualCliente()","url":"%3Cinit%3E()"}]

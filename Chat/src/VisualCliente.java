@@ -30,8 +30,12 @@ import java.util.Random;
 import java.awt.Toolkit;
 import javax.swing.SwingConstants;
 
-//código elaborado con la ayuda con los videos del canal "pildorasinformáticas"
-
+/**
+ * 
+ * @author sebas
+ *código elaborado con la ayuda de los videos del canal "pildorasinformáticas", se usó los videos sobre swing, sockets, chat y JavaDoc.Se usó en total 42 videos del canal.
+ *se implementa la clase "Runnable" para la creación de un hilo
+ */
 public class VisualCliente implements Runnable{
 
 	private JFrame frmServicioDeChat;
@@ -43,7 +47,7 @@ public class VisualCliente implements Runnable{
 	private JTextField textField_4;
 
 	/**
-	 * Launch the application.
+	 * Ejecuta la aplicación
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -59,14 +63,14 @@ public class VisualCliente implements Runnable{
 	}
 
 	/**
-	 * Create the application.
+	 * Crea la ventana visual del cliente
 	 */
 	public VisualCliente() {
 		initialize();
 	}
 
 	/**
-	 * Initialize the contents of the frame.
+	 * Inicializa los contenidos de la parte gráfica de la aplicación
 	 */
 	private void initialize() {
 		String miPuerto = String.valueOf(puertoLlegada());
@@ -167,8 +171,17 @@ public class VisualCliente implements Runnable{
 		reciboDeMensajes.start();
 	}
 	
+	/**
+	 * 
+	 * Se encarga de recopilar la informaión introducida por el cliente para eviarla al servidor
+	 *
+	 */
+	
 	private class EnviarMensaje implements ActionListener{
  
+		/**
+		 * Cuando se presiona el botón de enviar mensaje, lo empaqueta y envía al puerto 10234 donde el servidor está a la escucha
+		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
@@ -195,7 +208,7 @@ public class VisualCliente implements Runnable{
 			
 			else {
 				try {
-					Socket EnvioDeMensaje = new Socket("192.168.100.75", 9999);
+					Socket EnvioDeMensaje = new Socket("192.168.100.75", 10234);
 					
 					ObjetoDeEnvio mensajeCompleto = new ObjetoDeEnvio();
 					
@@ -223,6 +236,8 @@ public class VisualCliente implements Runnable{
 					
 					EnvioDeMensaje.close();
 					
+					textField_2.setText(null);
+					
 					
 					
 				} catch (UnknownHostException e1) {
@@ -241,6 +256,9 @@ public class VisualCliente implements Runnable{
 		
 	}
 
+	/**
+	 * Hilo que se encarga de estar siempre a la esucha en un puerto desigando aleatoriamente por el programa, donde recibirá mensajes
+	 */
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -265,9 +283,20 @@ public class VisualCliente implements Runnable{
 				try {
 					recibo = (ObjetoDeEnvio) entradaDatos.readObject();
 					
-					textArea.append("\n" + recibo.getNombre() + ": " + recibo.getMensaje());
+					System.out.println("Nombre que llego : " + recibo.getNombre());
 					
-					datos.close();
+					if (recibo.getNombre() == null) {
+						
+						textArea.append(" " + recibo.getMensaje());
+					}
+					
+					else {
+					
+						textArea.append("\n" + recibo.getNombre() + ": " + recibo.getMensaje());
+						
+						datos.close();
+					
+					}
 					
 				} 
 				
@@ -293,6 +322,12 @@ public class VisualCliente implements Runnable{
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @return el número de puerto creado aleatoriamente
+	 * para poder crear este puerto, se ayuda de la clase "Random" y el método "nextInt". El puerto se crea en el rango entre 9010 y 9989
+	 */
+	
 	public int puertoLlegada() {
 		
 		Random puertoNuevo = new Random();
@@ -307,6 +342,13 @@ public class VisualCliente implements Runnable{
 		return puerto;
 	}
 }
+
+/**
+ * 
+ * clase encargada de crear el objeto a enviar por un socket al servidor
+ * Se implementa la clase "Serializable", para que la información viaje en forma de bytes por la red
+ *
+ */
 
 class ObjetoDeEnvio implements Serializable{
 	

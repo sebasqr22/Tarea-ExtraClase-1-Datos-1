@@ -10,13 +10,20 @@ import java.awt.Color;
 import javax.swing.JTextArea;
 import java.awt.Toolkit;
 
+/**
+ * 
+ * @author sebas
+ * código elaborado con la ayuda de los videos del canal "pildorasinformáticas", se usó los videos sobre swing, sockets, chat y JavaDoc. Se usó en total 42 videos del canal.
+ * se implementa la clase "Runnable" para la creación de un hilo
+ */
+
 public class VisualServer implements Runnable{
 
 	private JFrame frmServidorDelChat;
 	private JTextArea textArea;
 
 	/**
-	 * Launch the application.
+	 * Ejecuta la aplicación
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -32,14 +39,14 @@ public class VisualServer implements Runnable{
 	}
 
 	/**
-	 * Create the application.
+	 * Crea la ventana visual del servidor
 	 */
 	public VisualServer() {
 		initialize();
 	}
 
 	/**
-	 * Initialize the contents of the frame.
+	 * Inicializa los contenidos de la parte gráfica de la aplicación
 	 */
 	private void initialize() {
 		frmServidorDelChat = new JFrame();
@@ -60,17 +67,22 @@ public class VisualServer implements Runnable{
 		entradaDatos.start();
 	}
 
+	/**
+	 * Se crea el hilo que permite que el servidor esté siempre a la esucha en el puerto 10234
+	 * Si el mensaje es enviado al destinatario correctamente, el servidor envia un mensaje de exito
+	 */
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		
 		try {
-			ServerSocket llegadaMensaje = new ServerSocket(9999);
+			ServerSocket llegadaMensaje = new ServerSocket(10234);
 			
 			ObjetoDeEnvio entrada;
 			
 			while(true) {
-				String usuario, ip, mensajeCompleto, ipDevuelta, mensajeError;
+				String usuario, ip, mensajeCompleto;
 				
 				Socket llegadaServidor = llegadaMensaje.accept();
 				
@@ -104,6 +116,31 @@ public class VisualServer implements Runnable{
 					System.out.println("---Enviado---");
 					
 					envioDeMensaje.close();
+					
+					
+					
+					ip = entrada.getMiIp();
+					
+					usuario = ("ser");
+					
+					mensajeCompleto = ("(Mensaje enviado con éxito)");
+					
+					entrada.setMensaje(mensajeCompleto);
+					
+					entrada.setNombre(null);
+					
+					int miPuerto = Integer.parseInt(entrada.getMiPuerto());
+					
+					Socket envioExito = new Socket(ip, miPuerto);
+					
+					ObjectOutputStream exito = new ObjectOutputStream(envioExito.getOutputStream());
+					
+					exito.writeObject(entrada);
+					
+					System.out.println("---Envio--de--exito---");
+					
+					envioExito.close();
+					
 					
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
