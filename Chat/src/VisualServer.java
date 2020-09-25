@@ -124,6 +124,8 @@ public class VisualServer implements Runnable{
 			e.printStackTrace();
 			
 			System.out.println("Error 2");
+	
+			System.out.println("Corriendo otravez");
 		}
-	}
+	} // cierra el run
 }

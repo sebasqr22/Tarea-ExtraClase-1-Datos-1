@@ -1,5 +1,6 @@
 import java.awt.EventQueue;
 
+
 import javax.swing.JFrame;
 import java.awt.Color;
 import javax.swing.JTextField;
@@ -28,6 +29,8 @@ import java.net.UnknownHostException;
 import java.util.Random;
 import java.awt.Toolkit;
 import javax.swing.SwingConstants;
+
+//código elaborado con la ayuda con los videos del canal "pildorasinformáticas"
 
 public class VisualCliente implements Runnable{
 
@@ -165,7 +168,7 @@ public class VisualCliente implements Runnable{
 	}
 	
 	private class EnviarMensaje implements ActionListener{
-
+ 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
@@ -356,6 +359,4 @@ class ObjetoDeEnvio implements Serializable{
 	}
 
 	private String nombre, ip, puerto, mensaje, miIp, miPuerto;
-	
-	
 }
