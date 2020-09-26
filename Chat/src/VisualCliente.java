@@ -29,6 +29,8 @@ import java.net.UnknownHostException;
 import java.util.Random;
 import java.awt.Toolkit;
 import javax.swing.SwingConstants;
+import javax.swing.JSlider;
+import javax.swing.JScrollPane;
 
 /**
  * 
@@ -114,7 +116,7 @@ public class VisualCliente implements Runnable{
 		
 		textArea = new JTextArea();
 		textArea.setFont(new Font("Kumbh Sans", Font.PLAIN, 15));
-		textArea.setBounds(368, 9, 606, 640);
+		textArea.setBounds(368, 9, 606, 582);
 		frmServicioDeChat.getContentPane().add(textArea);
 		
 		textField_2 = new JTextField();
@@ -160,6 +162,13 @@ public class VisualCliente implements Runnable{
 		
 		frmServicioDeChat.getContentPane().add(textField_4);
 		textField_4.setColumns(10);
+		
+		JButton botonLimpiar = new JButton("Limpiar\r\n");
+		botonLimpiar.setFont(new Font("Kumbh Sans", Font.BOLD, 12));
+		botonLimpiar.setBounds(642, 614, 89, 23);
+		Limpia limpiarTexto = new Limpia();
+		botonLimpiar.addActionListener(limpiarTexto);
+		frmServicioDeChat.getContentPane().add(botonLimpiar);
 		
 		frmServicioDeChat.setBackground(Color.LIGHT_GRAY);
 		frmServicioDeChat.setTitle("SERVICIO DE CHAT");
@@ -320,6 +329,22 @@ public class VisualCliente implements Runnable{
 	private ObjectInputStream ObjectInputStream(InputStream inputStream) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	/**
+	 * 
+	 * clase que se encarga de limpar la pantalla si el cliente presiona el botón de limpiar
+	 *
+	 */
+	
+	private class Limpia implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			
+			textArea.setText(null);
+		}	
 	}
 	
 	/**
