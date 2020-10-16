@@ -76,93 +76,107 @@ public class VisualServer implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		try {
-			ServerSocket llegadaMensaje = new ServerSocket(10234);
+		while (true) {
+			ServerSocket  llegadaMensaje = null;
 			
-			ObjetoDeEnvio entrada;
-			
-			while(true) {
-				String usuario, ip, mensajeCompleto;
+			try {
+				llegadaMensaje = new ServerSocket(10234);
 				
-				Socket llegadaServidor = llegadaMensaje.accept();
+				ObjetoDeEnvio entrada;
 				
-				ObjectInputStream llegada = new ObjectInputStream(llegadaServidor.getInputStream());
-				
-				try {
-					entrada = (ObjetoDeEnvio) llegada.readObject();
+				while(true) {
+					String usuario, ip, mensajeCompleto;
 					
-					usuario = entrada.getNombre();
+					Socket llegadaServidor = llegadaMensaje.accept();
 					
-					ip = entrada.getIp();
+					ObjectInputStream llegada = new ObjectInputStream(llegadaServidor.getInputStream());
 					
-					int puerto = Integer.parseInt(entrada.getPuerto());
+					try {
+						entrada = (ObjetoDeEnvio) llegada.readObject();
+						
+						usuario = entrada.getNombre();
+						
+						ip = entrada.getIp();
+						
+						int puerto = Integer.parseInt(entrada.getPuerto());
+						
+						mensajeCompleto = entrada.getMensaje();
+						
+						textArea.append("\n" + usuario + ": " + mensajeCompleto + " hacia: " + ip + " por: " + entrada.getPuerto());
+						
+						llegadaServidor.close();
+						
+						llegada.close();
+						
+						
+						
+						Socket envioDeMensaje = new Socket(ip, puerto);
+						
+						ObjectOutputStream reenvio = new ObjectOutputStream(envioDeMensaje.getOutputStream());
+						
+						reenvio.writeObject(entrada);
+						
+						System.out.println("---Enviado---");
+						
+						envioDeMensaje.close();
+						
+						
+						
+						ip = entrada.getMiIp();
+						
+						usuario = ("ser");
+						
+						mensajeCompleto = ("(Mensaje enviado con éxito)");
+						
+						entrada.setMensaje(mensajeCompleto);
+						
+						entrada.setNombre(null);
+						
+						int miPuerto = Integer.parseInt(entrada.getMiPuerto());
+						
+						Socket envioExito = new Socket(ip, miPuerto);
+						
+						ObjectOutputStream exito = new ObjectOutputStream(envioExito.getOutputStream());
+						
+						exito.writeObject(entrada);
+						
+						System.out.println("---Envio--de--exito---");
+						
+						envioExito.close();
+						
+						
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						
+						e.getMessage();
+						
+						e.getCause();
+						
+						System.out.println("Error 1");
+						
+					}
 					
-					mensajeCompleto = entrada.getMensaje();
-					
-					textArea.append("\n" + usuario + ": " + mensajeCompleto + " hacia: " + ip + " por: " + entrada.getPuerto());
-					
-					llegadaServidor.close();
-					
-					llegada.close();
-					
-					
-					
-					Socket envioDeMensaje = new Socket(ip, puerto);
-					
-					ObjectOutputStream reenvio = new ObjectOutputStream(envioDeMensaje.getOutputStream());
-					
-					reenvio.writeObject(entrada);
-					
-					System.out.println("---Enviado---");
-					
-					envioDeMensaje.close();
-					
-					
-					
-					ip = entrada.getMiIp();
-					
-					usuario = ("ser");
-					
-					mensajeCompleto = ("(Mensaje enviado con éxito)");
-					
-					entrada.setMensaje(mensajeCompleto);
-					
-					entrada.setNombre(null);
-					
-					int miPuerto = Integer.parseInt(entrada.getMiPuerto());
-					
-					Socket envioExito = new Socket(ip, miPuerto);
-					
-					ObjectOutputStream exito = new ObjectOutputStream(envioExito.getOutputStream());
-					
-					exito.writeObject(entrada);
-					
-					System.out.println("---Envio--de--exito---");
-					
-					envioExito.close();
-					
-					
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					
-					e.getMessage();
-					
-					e.getCause();
-					
-					System.out.println("Error 1");
-					
+						
 				}
 				
-					
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				
+				System.out.println("Error 2");
+		
+				System.out.println("Corriendo otravez");
 			}
 			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			
-			System.out.println("Error 2");
-	
-			System.out.println("Corriendo otravez");
-		}
+			finally {
+				
+				try {
+					llegadaMensaje.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}	
 	} // cierra el run
 }
