@@ -59,6 +59,9 @@ public class VisualServer implements Runnable{
 		frmServidorDelChat.getContentPane().setLayout(null);
 		
 		textArea = new JTextArea();
+		textArea.setWrapStyleWord(true);
+		textArea.setEditable(false);
+		textArea.setLineWrap(true);
 		textArea.setBounds(0, 0, 450, 397);
 		frmServidorDelChat.getContentPane().add(textArea);
 		
@@ -76,6 +79,12 @@ public class VisualServer implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 		
+		boolean fallido = false;
+		
+		String ultimoIp = null;
+		
+		int ultimoPuerto = 0;
+		
 		while (true) {
 			ServerSocket  llegadaMensaje = null;
 			
@@ -83,6 +92,29 @@ public class VisualServer implements Runnable{
 				llegadaMensaje = new ServerSocket(10234);
 				
 				ObjetoDeEnvio entrada;
+				
+				if (fallido == true) {
+					
+					Socket enviaFallo = new Socket(ultimoIp, ultimoPuerto);
+					
+					ObjetoDeEnvio error = new ObjetoDeEnvio();
+					
+					error.setNombre("Servidor");
+					
+					error.setMensaje(null);
+					
+					ObjectOutputStream errorCompleto = new ObjectOutputStream(enviaFallo.getOutputStream());
+					
+					errorCompleto.writeObject(error);
+					
+					textArea.append(" " + "(El mensaje no se envió por error del cliente)");
+					
+					errorCompleto.close();
+					
+					enviaFallo.close();
+					
+					fallido = false;
+				}
 				
 				while(true) {
 					String usuario, ip, mensajeCompleto;
@@ -101,6 +133,10 @@ public class VisualServer implements Runnable{
 						int puerto = Integer.parseInt(entrada.getPuerto());
 						
 						mensajeCompleto = entrada.getMensaje();
+						
+						ultimoPuerto = Integer.parseInt(entrada.getMiPuerto());
+						
+						ultimoIp = entrada.getMiIp();
 						
 						textArea.append("\n" + usuario + ": " + mensajeCompleto + " hacia: " + ip + " por: " + entrada.getPuerto());
 						
@@ -121,30 +157,6 @@ public class VisualServer implements Runnable{
 						envioDeMensaje.close();
 						
 						
-						
-						ip = entrada.getMiIp();
-						
-						usuario = ("ser");
-						
-						mensajeCompleto = ("(Mensaje enviado con éxito)");
-						
-						entrada.setMensaje(mensajeCompleto);
-						
-						entrada.setNombre(null);
-						
-						int miPuerto = Integer.parseInt(entrada.getMiPuerto());
-						
-						Socket envioExito = new Socket(ip, miPuerto);
-						
-						ObjectOutputStream exito = new ObjectOutputStream(envioExito.getOutputStream());
-						
-						exito.writeObject(entrada);
-						
-						System.out.println("---Envio--de--exito---");
-						
-						envioExito.close();
-						
-						
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						
@@ -153,6 +165,8 @@ public class VisualServer implements Runnable{
 						e.getCause();
 						
 						System.out.println("Error 1");
+						
+						fallido = true;
 						
 					}
 					
@@ -166,6 +180,8 @@ public class VisualServer implements Runnable{
 				System.out.println("Error 2");
 		
 				System.out.println("Corriendo otravez");
+				
+				fallido = true;
 			}
 			
 			finally {

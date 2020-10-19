@@ -115,6 +115,9 @@ public class VisualCliente implements Runnable{
 		frmServicioDeChat.getContentPane().add(textoAquiMen);
 		
 		textArea = new JTextArea();
+		textArea.setWrapStyleWord(true);
+		textArea.setLineWrap(true);
+		textArea.setEditable(false);
 		textArea.setFont(new Font("Kumbh Sans", Font.PLAIN, 15));
 		textArea.setBounds(368, 9, 606, 582);
 		frmServicioDeChat.getContentPane().add(textArea);
@@ -292,11 +295,9 @@ public class VisualCliente implements Runnable{
 				try {
 					recibo = (ObjetoDeEnvio) entradaDatos.readObject();
 					
-					System.out.println("Nombre que llego : " + recibo.getNombre());
-					
-					if (recibo.getNombre() == null) {
+					if (recibo.getMensaje() == null ) {
 						
-						textArea.append(" " + recibo.getMensaje());
+						textArea.append(" " + "(El mensaje no se envió al destinatario, favor revisar el puerto y la ip)");
 					}
 					
 					else {
