@@ -1,3 +1,0 @@
-Hola profe, el documento en GitHub se encuentra provado pero yo le di acceso desde la semana pasada. 
-Hay un error que no pude arreglar, incluso recibí ayuda del asistente pero no fue posible solucionarlo. 
-Cuando el usuario introduce un puerto que no se esté utilizando el servidor se cae y no pude accerlo funcionar de nuevo de forma autónoma. 
